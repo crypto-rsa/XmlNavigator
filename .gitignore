@@ -1,0 +1,15 @@
+#Ignore files build by Visual Studio
+*.user
+*.aps
+*.pch
+*.vspscc
+*.ncb
+*.suo
+*.bak
+*.cache
+*.ilk
+*.log
+[Bb]in
+[Dd]ebug*/
+*.sbr
+obj/
