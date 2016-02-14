@@ -56,6 +56,11 @@ namespace XmlNavigator
                 Main.PluginCleanUp();
                 Marshal.FreeHGlobal(_ptrPluginName);
             }
+
+			if( nc.nmhdr.code == (uint) NppMsg.NPPN_BUFFERACTIVATED )
+			{
+				Main.OnBufferActivated();
+			}
         }
     }
 }

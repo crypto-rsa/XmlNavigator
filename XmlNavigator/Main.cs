@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -19,7 +20,7 @@ namespace XmlNavigator
 		/// <summary>
 		/// The plugin name
 		/// </summary>
-		internal const string PluginName = "XmlNavigator";
+		internal const string PluginName = "XML Navigator";
 
 		#endregion
 
@@ -119,6 +120,27 @@ namespace XmlNavigator
 			{
 				Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_DMMSHOW, 0, _navigatorForm.Handle );
 			}
+		}
+
+		internal static void OnNotification( string message )
+		{
+			if( _navigatorForm == null )
+				return;
+
+			_navigatorForm.AddNode( message );
+		}
+
+		internal static void OnBufferActivated()
+		{
+			if( _navigatorForm == null )
+				return;
+
+			_navigatorForm.Reload();
+		}
+
+		internal static void UpdateForm( IntPtr handle )
+		{
+			Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_DMMUPDATEDISPINFO, 0, handle );
 		}
 
 		#endregion
