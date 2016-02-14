@@ -28,31 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.SuspendLayout();
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 0;
-            // 
-            // frmMyDlg
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
-            this.Controls.Add(this.textBox1);
-            this.Name = "frmMyDlg";
-            this.Text = "frmMyDlg";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+			this.treeViewNodes = new System.Windows.Forms.TreeView();
+			this.SuspendLayout();
+			// 
+			// treeViewNodes
+			// 
+			this.treeViewNodes.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeViewNodes.Location = new System.Drawing.Point( 0, 0 );
+			this.treeViewNodes.Name = "treeViewNodes";
+			this.treeViewNodes.Size = new System.Drawing.Size( 284, 262 );
+			this.treeViewNodes.TabIndex = 1;
+			// 
+			// NavigatorForm
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size( 284, 262 );
+			this.Controls.Add( this.treeViewNodes );
+			this.Name = "NavigatorForm";
+			this.Text = "XML Navigator";
+			this.ResumeLayout( false );
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
-    }
+		private System.Windows.Forms.TreeView treeViewNodes;
+
+	}
 }
