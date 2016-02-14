@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace NppPluginNET
 {
@@ -41,6 +42,24 @@ namespace NppPluginNET
             Win32.SendMessage(nppData._nppHandle, NppMsg.NPPM_GETCURRENTSCINTILLA, 0, out curScintilla);
             return (curScintilla == 0) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
         }
-        #endregion
-    }
+
+		internal static string GetCurrentFileText( int length = -1 )
+		{
+			if( length == -1 )
+				length = Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0 ).ToInt32();
+
+			Sci_TextRange range = new Sci_TextRange( 0, -1, length );
+			Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXTRANGE, 0, range.NativePointer );
+			return range.lpstrText;
+		}
+
+		internal static string GetFullCurrentFileName()
+		{
+			StringBuilder builder = new StringBuilder( Win32.MAX_PATH );
+			Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_GETFULLCURRENTPATH, 0, builder );
+			return builder.ToString();
+		}
+
+		#endregion
+	}
 }
