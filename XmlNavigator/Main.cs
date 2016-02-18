@@ -122,25 +122,12 @@ namespace XmlNavigator
 			}
 		}
 
-		internal static void OnNotification( string message )
-		{
-			if( _navigatorForm == null )
-				return;
-
-			_navigatorForm.AddNode( message );
-		}
-
 		internal static void OnBufferActivated()
 		{
 			if( _navigatorForm == null )
 				return;
 
 			_navigatorForm.Reload();
-		}
-
-		internal static void UpdateForm( IntPtr handle )
-		{
-			Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_DMMUPDATEDISPINFO, 0, handle );
 		}
 
 		#endregion

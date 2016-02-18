@@ -29,11 +29,6 @@ namespace XmlNavigator
 		private XmlParser _parser;
 
 		/// <summary>
-		/// A mapping from the parsed nodes to the tree nodes
-		/// </summary>
-		private Dictionary<XmlNode, TreeNode> _nodeDictionary;
-
-		/// <summary>
 		/// The task which generates the tree nodes (returns the root node)
 		/// </summary>
 		private Task<TreeNode> _generateTreeTask;
@@ -61,12 +56,9 @@ namespace XmlNavigator
 
 		#region Methods
 
-		// TEST
-		public void AddNode( string text )
-		{
-			treeViewNodes.Nodes.Add( text );
-		}
-
+		/// <summary>
+		/// Reloads the data using the current file
+		/// </summary>
 		public void Reload()
 		{
 			_path = NppPluginNET.PluginBase.GetFullCurrentFileName();
@@ -179,10 +171,5 @@ namespace XmlNavigator
 		}
 
 		#endregion
-
-		private void RefreshForm()
-		{
-			Main.UpdateForm( this.Handle );
-		}
 	}
 }
