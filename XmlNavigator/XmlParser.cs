@@ -13,9 +13,9 @@ namespace XmlNavigator
 		#region Data Members
 
 		/// <summary>
-		/// The XML node represented by this node
+		/// The name of this node
 		/// </summary>
-		private XmlNode _xmlNode;
+		private string _name;
 
 		/// <summary>
 		/// The parent node of this node
@@ -47,13 +47,13 @@ namespace XmlNavigator
 		#region Constructors
 
 		/// <summary>
-		/// Constructs a node representing a XML node
+		/// Constructs a node
 		/// </summary>
-		/// <param name="xmlNode">The XML node to represent by this object</param>
-		public NodeData( XmlNode xmlNode )
+		/// <param name="name">The name of this object</param>
+		public NodeData( string name )
 		{
 			_childNodes = new List<NodeData>();
-			_xmlNode = xmlNode;
+			_name = name;
 		}
 
 		#endregion
@@ -62,10 +62,7 @@ namespace XmlNavigator
 
 		public override string ToString()
 		{
-			if( _xmlNode == null )
-				return base.ToString();
-
-			return _xmlNode.Name;
+			return _name;
 		}
 		
 		#endregion
@@ -73,15 +70,13 @@ namespace XmlNavigator
 		#region Methods
 
 		/// <summary>
-		/// Adds a child node representing an XML node
+		/// Adds a child node
 		/// </summary>
-		/// <param name="xmlNode">The XML node represented by the child node</param>
+		/// <param name="name">The name of the child node</param>
 		/// <returns>The newly created child node</returns>
-		public NodeData AddChild( XmlNode xmlNode )
+		public NodeData AddChild( string name )
 		{
-			System.Diagnostics.Debug.Assert( xmlNode.ParentNode == _xmlNode, "The child XML node should be a descendant of the current XML node!" );
-
-			var childNode = new NodeData( xmlNode );
+			var childNode = new NodeData( name );
 			AddChild( childNode );
 
 			return childNode;
@@ -264,7 +259,7 @@ namespace XmlNavigator
 		/// <returns>The parsed node</returns>
 		private NodeData ParseNode( XmlNode xmlNode, NodeData parentNode )
 		{
-			var node = parentNode == null ? new NodeData( xmlNode ) : parentNode.AddChild( xmlNode );
+			var node = parentNode == null ? new NodeData( xmlNode.LocalName ) : parentNode.AddChild( xmlNode.LocalName );
 
 			foreach( XmlNode childNode in xmlNode.ChildNodes )
 			{
