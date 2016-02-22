@@ -209,9 +209,9 @@ namespace XmlNavigator
 		private string _path;
 
 		/// <summary>
-		/// The XML document read from the file (if null, it is not a valid XML document)
+		/// The reader for the XML
 		/// </summary>
-		private XmlDocument _document;
+		private XmlReader _reader;
 
 		/// <summary>
 		/// An object representing the root node of the XML document
@@ -229,8 +229,8 @@ namespace XmlNavigator
 		public XmlParser( string path )
 		{
 			_path = path;
-			_document = GetDocument();
 
+			CreateReader();
 			Parse();
 		}
 
@@ -245,47 +245,65 @@ namespace XmlNavigator
 		{
 			_rootNode = null;
 
-			if( _document == null )
+			if( _reader == null )
 				return;
-
-			_rootNode = ParseNode( _document.DocumentElement, null );
-		}
-
-		/// <summary>
-		/// Parses a single XML node along with its child nodes
-		/// </summary>
-		/// <param name="xmlNode">The XML node to parse</param>
-		/// <param name="parentNode">The parent node to add the new node to</param>
-		/// <returns>The parsed node</returns>
-		private NodeData ParseNode( XmlNode xmlNode, NodeData parentNode )
-		{
-			var node = parentNode == null ? new NodeData( xmlNode.LocalName ) : parentNode.AddChild( xmlNode.LocalName );
-
-			foreach( XmlNode childNode in xmlNode.ChildNodes )
-			{
-				if( childNode.NodeType != XmlNodeType.Element )
-					continue;
-
-				ParseNode( childNode, node );
-			}
-
-			return node;
-		}
-
-		/// <summary>
-		/// Returns the XML document from the current file
-		/// </summary>
-		/// <returns>The parsed XML document (null if not valid)</returns>
-		private XmlDocument GetDocument()
-		{
-			var document = new XmlDocument();
 
 			try
 			{
-				document.Load( _path );
-				return document;
+				ReadNodes();
 			}
-			catch { }
+			catch( Exception e )
+			{
+				System.Diagnostics.Debug.WriteLine( e.Message );
+			}
+		}
+
+		/// <summary>
+		/// Reads the nodes using the current <see cref="_reader"/>
+		/// </summary>
+		private void ReadNodes()
+		{
+			var parentNodes = new Dictionary<int, NodeData>();
+
+			while( _reader.Read() )
+			{
+				if( _reader.NodeType != XmlNodeType.Element )
+					continue;
+
+				NodeData current;
+				NodeData parent;
+
+				if( parentNodes.TryGetValue( _reader.Depth, out parent ) )
+				{
+					current = parent.AddChild( _reader.LocalName );
+				}
+				else
+				{
+					current = new NodeData( _reader.LocalName );
+				}
+
+				if( _rootNode == null && _reader.Depth == 0 )
+				{
+					_rootNode = current;
+				}
+
+				parentNodes[_reader.Depth + 1] = current;
+			}
+		}
+
+		/// <summary>
+		/// Creates the XML reader for the current file
+		/// </summary>
+		private XmlReader CreateReader()
+		{
+			try
+			{
+				_reader = XmlReader.Create( _path );
+			}
+			catch( Exception e )
+			{
+				System.Diagnostics.Debug.WriteLine( e.Message );
+			}
 
 			return null;
 		}
