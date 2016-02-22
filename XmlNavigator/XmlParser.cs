@@ -6,6 +6,26 @@ using System.Xml;
 namespace XmlNavigator
 {
 	/// <summary>
+	/// Represents an extent of a node in the source string
+	/// </summary>
+	public class NodeExtent
+	{
+		#region Properties
+
+		/// <summary>
+		/// Gets or sets the start position of the extent
+		/// </summary>
+		public int Start { get; set; } = -1;
+
+		/// <summary>
+		/// Gets or sets the end position of the extent
+		/// </summary>
+		public int End { get; set; } = -1;
+
+		#endregion
+	}
+
+	/// <summary>
 	/// Contains information about a single XML node
 	/// </summary>
 	public class NodeData
@@ -33,14 +53,14 @@ namespace XmlNavigator
 		private int _index;
 
 		/// <summary>
-		/// The start position of the node in the document
+		/// The extent of the full node including the opening and closing tags
 		/// </summary>
-		private int _startPosition;
+		private NodeExtent _nodeExtent;
 
 		/// <summary>
-		/// The end position of the node in the document
+		/// The extent of the node content
 		/// </summary>
-		private int _endPosition;
+		private NodeExtent _contentExtent;
 
 		#endregion
 
@@ -52,8 +72,10 @@ namespace XmlNavigator
 		/// <param name="name">The name of this object</param>
 		public NodeData( string name )
 		{
-			_childNodes = new List<NodeData>();
 			_name = name;
+			_childNodes = new List<NodeData>();
+			_nodeExtent = new NodeExtent();
+			_contentExtent = new NodeExtent();
 		}
 
 		#endregion
@@ -176,21 +198,19 @@ namespace XmlNavigator
 		}
 
 		/// <summary>
-		/// Gets or sets the start position of the node in the document
+		/// Gets the extent of the full node (including the opening and closing tags)
 		/// </summary>
-		public int StartPosition
+		public NodeExtent NodeExtent
 		{
-			get { return _startPosition; }
-			set { _startPosition = value; }
+			get { return _nodeExtent; }
 		}
 
 		/// <summary>
-		/// Gets or sets the end position of the node in the document
+		/// Gets the extent of the node content
 		/// </summary>
-		public int EndPosition
+		public NodeExtent ContentExtent
 		{
-			get { return _endPosition; }
-			set { _endPosition = value; }
+			get { return _contentExtent; }
 		}
 
 		#endregion
