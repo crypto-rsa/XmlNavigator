@@ -312,6 +312,8 @@ namespace XmlNavigator
 					current = new NodeData( reader.LocalName );
 				}
 
+				current.NodeExtent.Start = GetCurrentPosition( reader ) - 1;
+
 				if( _rootNode == null && reader.Depth == 0 )
 				{
 					_rootNode = current;
@@ -335,6 +337,19 @@ namespace XmlNavigator
 			{
 				_lineOffsets[i] = i == 0 ? 0 : _lineOffsets[i - 1] + lines[i - 1].Length + separatorLength;
 			}
+		}
+
+		/// <summary>
+		/// Returns the current position of a reader in the souce text
+		/// </summary>
+		/// <param name="reader">The reader to get the position of</param>
+		/// <returns>The linear position of <paramref name="reader"/></returns>
+		private int GetCurrentPosition( XmlReader reader )
+		{
+			var lineInfo = (IXmlLineInfo) reader;
+			int position = _lineOffsets[lineInfo.LineNumber - 1] + lineInfo.LinePosition - 1;
+
+			return position;
 		}
 
 		#endregion
