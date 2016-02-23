@@ -130,6 +130,25 @@ namespace XmlNavigator
 			_navigatorForm.Reload();
 		}
 
+		/// <summary>
+		/// Sets a new selection in the Scintilla window
+		/// </summary>
+		/// <param name="startPosition">The start position of the selection</param>
+		/// <param name="endPosition">The end position of the selection (if less than zero, it is set equal to <paramref name="startPosition"/>)</param>
+		internal static void SetSelection( int startPosition, int endPosition = -1 )
+		{
+			var scintilla = PluginBase.GetCurrentScintilla();
+
+			if( endPosition < 0 )
+			{
+				endPosition = startPosition;
+			}
+
+			Win32.SendMessage( scintilla, SciMsg.SCI_SETSELECTIONSTART, startPosition, 0 );
+			Win32.SendMessage( scintilla, SciMsg.SCI_SETSELECTIONEND, endPosition, 0 );
+			Win32.SendMessage( scintilla, SciMsg.SCI_SCROLLCARET, 0, 0 );
+		}
+
 		#endregion
 	}
 }

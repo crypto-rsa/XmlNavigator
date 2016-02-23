@@ -34,20 +34,21 @@
 			// treeViewNodes
 			// 
 			this.treeViewNodes.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeViewNodes.Location = new System.Drawing.Point( 0, 0 );
+			this.treeViewNodes.Location = new System.Drawing.Point(0, 0);
 			this.treeViewNodes.Name = "treeViewNodes";
-			this.treeViewNodes.Size = new System.Drawing.Size( 284, 262 );
+			this.treeViewNodes.Size = new System.Drawing.Size(284, 262);
 			this.treeViewNodes.TabIndex = 1;
+			this.treeViewNodes.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewNodes_AfterSelect);
 			// 
 			// NavigatorForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size( 284, 262 );
-			this.Controls.Add( this.treeViewNodes );
+			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.Controls.Add(this.treeViewNodes);
 			this.Name = "NavigatorForm";
 			this.Text = "XML Navigator";
-			this.ResumeLayout( false );
+			this.ResumeLayout(false);
 
         }
 

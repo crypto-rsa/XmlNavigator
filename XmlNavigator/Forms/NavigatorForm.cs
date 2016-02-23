@@ -123,7 +123,7 @@ namespace XmlNavigator
 		{
 			_generateTreeCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-			var node = new TreeNode( data.ToString() );
+			var node = new TreeNode( data.ToString() ) { Tag = data };
 
 			if( nodeCollection != null )
 			{
@@ -168,6 +168,19 @@ namespace XmlNavigator
 				return;
 
 			Invoke( new Action( () => treeViewNodes.Nodes.Add( task.Result ) ) );
+		}
+
+		#endregion
+
+		#region Event Handlers
+
+		private void treeViewNodes_AfterSelect( object sender, TreeViewEventArgs e )
+		{
+			var data = e.Node?.Tag as NodeData;
+			if( data == null )
+				return;
+
+			Main.SetSelection( data.NodeExtent.Start );
 		}
 
 		#endregion
