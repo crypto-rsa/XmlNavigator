@@ -229,6 +229,11 @@ namespace XmlNavigator
 		private string _path;
 
 		/// <summary>
+		/// The offsets of individual lines
+		/// </summary>
+		private int[] _lineOffsets;
+
+		/// <summary>
 		/// An object representing the root node of the XML document
 		/// </summary>
 		private NodeData _rootNode;
@@ -245,6 +250,7 @@ namespace XmlNavigator
 		{
 			_path = path;
 
+			CalculateLineOffsets();
 			Parse();
 		}
 
@@ -312,6 +318,22 @@ namespace XmlNavigator
 				}
 
 				parentNodes[reader.Depth + 1] = current;
+			}
+		}
+
+		/// <summary>
+		/// Calculates the offsets of individual lines in the source text
+		/// </summary>
+		private void CalculateLineOffsets()
+		{
+			var text = System.IO.File.ReadAllText( _path );
+			var lines = text.Split( new string[] { Environment.NewLine }, StringSplitOptions.None );
+			int separatorLength = Environment.NewLine.Length;
+
+			_lineOffsets = new int[lines.Length + 1];
+			for( int i = 0; i < _lineOffsets.Length; i++ )
+			{
+				_lineOffsets[i] = i == 0 ? 0 : _lineOffsets[i - 1] + lines[i - 1].Length + separatorLength;
 			}
 		}
 
