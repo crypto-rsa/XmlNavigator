@@ -229,11 +229,6 @@ namespace XmlNavigator
 		private string _path;
 
 		/// <summary>
-		/// The reader for the XML
-		/// </summary>
-		private XmlReader _reader;
-
-		/// <summary>
 		/// An object representing the root node of the XML document
 		/// </summary>
 		private NodeData _rootNode;
@@ -250,7 +245,6 @@ namespace XmlNavigator
 		{
 			_path = path;
 
-			CreateReader();
 			Parse();
 		}
 
@@ -265,67 +259,60 @@ namespace XmlNavigator
 		{
 			_rootNode = null;
 
-			if( _reader == null )
-				return;
+			XmlReader reader = null;
 
 			try
 			{
-				ReadNodes();
+				reader = XmlReader.Create( _path );
+				ReadNodes( reader );
 			}
 			catch( Exception e )
 			{
+
 				System.Diagnostics.Debug.WriteLine( e.Message );
+			}
+			finally
+			{
+				if( reader != null )
+				{
+					reader.Dispose();
+					reader = null;
+				}
 			}
 		}
 
 		/// <summary>
-		/// Reads the nodes using the current <see cref="_reader"/>
+		/// Reads the nodes using the given reader
 		/// </summary>
-		private void ReadNodes()
+		/// <param name="reader">The reader to use</param>
+		private void ReadNodes( XmlReader reader )
 		{
 			var parentNodes = new Dictionary<int, NodeData>();
 
-			while( _reader.Read() )
+			while( reader.Read() )
 			{
-				if( _reader.NodeType != XmlNodeType.Element )
+				if( reader.NodeType != XmlNodeType.Element )
 					continue;
 
 				NodeData current;
 				NodeData parent;
 
-				if( parentNodes.TryGetValue( _reader.Depth, out parent ) )
+				if( parentNodes.TryGetValue( reader.Depth, out parent ) )
 				{
-					current = parent.AddChild( _reader.LocalName );
+					current = parent.AddChild( reader.LocalName );
 				}
 				else
 				{
-					current = new NodeData( _reader.LocalName );
+					current = new NodeData( reader.LocalName );
 				}
 
-				if( _rootNode == null && _reader.Depth == 0 )
+				if( _rootNode == null && reader.Depth == 0 )
 				{
 					_rootNode = current;
 				}
 
-				parentNodes[_reader.Depth + 1] = current;
+				parentNodes[reader.Depth + 1] = current;
 			}
-		}
-
-		/// <summary>
-		/// Creates the XML reader for the current file
-		/// </summary>
-		private XmlReader CreateReader()
-		{
-			try
-			{
-				_reader = XmlReader.Create( _path );
-			}
-			catch( Exception e )
-			{
-				System.Diagnostics.Debug.WriteLine( e.Message );
-			}
-
-			return null;
 		}
 
 		#endregion
