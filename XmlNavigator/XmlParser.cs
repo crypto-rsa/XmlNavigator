@@ -224,9 +224,9 @@ namespace XmlNavigator
 		#region Data Members
 
 		/// <summary>
-		/// The full path to the file to parse
+		/// The input text to parse
 		/// </summary>
-		private string _path;
+		private string _text;
 
 		/// <summary>
 		/// The offsets of individual lines
@@ -245,10 +245,10 @@ namespace XmlNavigator
 		/// <summary>
 		/// Creates the parser for a specific path
 		/// </summary>
-		/// <param name="path">The full path to the file to parse</param>
-		public XmlParser( string path )
+		/// <param name="text">The input text to parse</param>
+		public XmlParser( string text )
 		{
-			_path = path;
+			_text = text;
 
 			CalculateLineOffsets();
 			Parse();
@@ -265,11 +265,13 @@ namespace XmlNavigator
 		{
 			_rootNode = null;
 
+			System.IO.StringReader textReader = null;
 			XmlReader reader = null;
 
 			try
 			{
-				reader = XmlReader.Create( _path );
+				textReader = new System.IO.StringReader( _text );
+				reader = XmlReader.Create( textReader );
 				ReadNodes( reader );
 			}
 			catch( Exception e )
@@ -284,6 +286,12 @@ namespace XmlNavigator
 					reader.Dispose();
 					reader = null;
 				}
+
+				if( textReader != null )
+				{
+					textReader.Dispose();
+					textReader = null;
+				}
 			}
 		}
 
@@ -294,6 +302,7 @@ namespace XmlNavigator
 		private void ReadNodes( XmlReader reader )
 		{
 			var parentNodes = new Dictionary<int, NodeData>();
+			var lineInfo = (IXmlLineInfo) reader;
 
 			while( reader.Read() )
 			{
@@ -328,8 +337,7 @@ namespace XmlNavigator
 		/// </summary>
 		private void CalculateLineOffsets()
 		{
-			var text = System.IO.File.ReadAllText( _path );
-			var lines = text.Split( new string[] { Environment.NewLine }, StringSplitOptions.None );
+			var lines = _text.Split( new string[] { Environment.NewLine }, StringSplitOptions.None );
 			int separatorLength = Environment.NewLine.Length;
 
 			_lineOffsets = new int[lines.Length + 1];

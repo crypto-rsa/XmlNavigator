@@ -24,6 +24,11 @@ namespace XmlNavigator
 		private string _path;
 
 		/// <summary>
+		/// The input text
+		/// </summary>
+		private string _text;
+
+		/// <summary>
 		/// The parser for the current file
 		/// </summary>
 		private XmlParser _parser;
@@ -62,6 +67,7 @@ namespace XmlNavigator
 		public void Reload()
 		{
 			_path = NppPluginNET.PluginBase.GetFullCurrentFileName();
+			_text = NppPluginNET.PluginBase.GetCurrentFileText();
 
 			RunFillTreeTask();
 		}
@@ -99,7 +105,7 @@ namespace XmlNavigator
 		/// <returns>The root node of the tree</returns>
 		private TreeNode GenerateTree()
 		{
-			_parser = new XmlParser( _path );
+			_parser = new XmlParser( _text );
 			if( _parser.RootNode == null )
 				return null;
 
@@ -180,7 +186,7 @@ namespace XmlNavigator
 			if( data == null )
 				return;
 
-			Main.SetSelection( data.NodeExtent.Start );
+			Main.GoToPosition( data.NodeExtent.Start );
 		}
 
 		#endregion

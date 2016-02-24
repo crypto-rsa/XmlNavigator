@@ -149,6 +149,17 @@ namespace XmlNavigator
 			Win32.SendMessage( scintilla, SciMsg.SCI_SCROLLCARET, 0, 0 );
 		}
 
+		/// <summary>
+		/// Moves a carent in the Scintilla window
+		/// </summary>
+		/// <param name="position">The position to move the caret to</param>
+		internal static void GoToPosition( int position )
+		{
+			var scintilla = PluginBase.GetCurrentScintilla();
+
+			Win32.SendMessage( scintilla, SciMsg.SCI_GOTOPOS, position, 0 );
+		}
+
 		#endregion
 	}
 }
