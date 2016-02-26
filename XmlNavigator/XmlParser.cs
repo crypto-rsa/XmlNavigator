@@ -33,24 +33,9 @@ namespace XmlNavigator
 		#region Data Members
 
 		/// <summary>
-		/// The name of this node
-		/// </summary>
-		private string _name;
-
-		/// <summary>
-		/// The parent node of this node
-		/// </summary>
-		private NodeData _parentNode;
-
-		/// <summary>
 		/// The list of child nodes
 		/// </summary>
 		private List<NodeData> _childNodes;
-
-		/// <summary>
-		/// The index of the node in its parent's child node list
-		/// </summary>
-		private int _index;
 
 		/// <summary>
 		/// The extent of the full node including the opening and closing tags
@@ -67,15 +52,25 @@ namespace XmlNavigator
 		#region Constructors
 
 		/// <summary>
-		/// Constructs a node
+		/// The default constructor
 		/// </summary>
-		/// <param name="name">The name of this object</param>
-		public NodeData( string name )
+		private NodeData()
 		{
-			_name = name;
 			_childNodes = new List<NodeData>();
 			_nodeExtent = new NodeExtent();
 			_contentExtent = new NodeExtent();
+		}
+
+		/// <summary>
+		/// Constructs a node using the current state of an <see cref="XmlReader"/>
+		/// </summary>
+		/// <param name="reader">The current reader</param>
+		public NodeData( XmlReader reader )
+		{
+			this.Name = reader.Name;
+			this.LocalName = reader.LocalName;
+			this.Depth = reader.Depth;
+			this.IsEmpty = reader.IsEmptyElement;
 		}
 
 		#endregion
@@ -84,25 +79,12 @@ namespace XmlNavigator
 
 		public override string ToString()
 		{
-			return _name;
+			return this.LocalName;
 		}
-		
+
 		#endregion
 
 		#region Methods
-
-		/// <summary>
-		/// Adds a child node
-		/// </summary>
-		/// <param name="name">The name of the child node</param>
-		/// <returns>The newly created child node</returns>
-		public NodeData AddChild( string name )
-		{
-			var childNode = new NodeData( name );
-			AddChild( childNode );
-
-			return childNode;
-		}
 
 		/// <summary>
 		/// Adds an existing node to this node
@@ -111,60 +93,8 @@ namespace XmlNavigator
 		public void AddChild( NodeData childNode )
 		{
 			childNode.Parent = this;
-			childNode.Index = _childNodes.Count;
 
 			_childNodes.Add( childNode );
-		}
-
-		/// <summary>
-		/// Inserts an existing node at the given position
-		/// </summary>
-		/// <param name="childNode">The node to insert</param>
-		/// <param name="index">The position to insert the node at</param>
-		public void InsertChild( NodeData childNode, int index )
-		{
-			if( index < 0 || index > _childNodes.Count )
-				throw new ArgumentOutOfRangeException( "index" );
-
-			childNode.Parent = this;
-			_childNodes.Insert( index, childNode );
-
-			// update the indices
-			for( int i = index; i < _childNodes.Count; i++ )
-			{
-				_childNodes[i].Index = i;
-			}
-		}
-
-		/// <summary>
-		/// Removes the given node
-		/// </summary>
-		/// <param name="childNode">The node to remove</param>
-		public void RemoveChild( NodeData childNode )
-		{
-			int index = _childNodes.FindIndex( d => d == childNode );
-			if( index >= 0 )
-			{
-				RemoveChildAt( index );
-			}
-		}
-
-		/// <summary>
-		/// Removes a child node at the given position
-		/// </summary>
-		/// <param name="index">The position to remove the node at</param>
-		public void RemoveChildAt( int index )
-		{
-			if( index < 0 || index >= _childNodes.Count )
-				throw new ArgumentOutOfRangeException( "index" );
-
-			_childNodes.RemoveAt( index );
-
-			// update the indices
-			for( int i = index; i < _childNodes.Count; i++ )
-			{
-				_childNodes[i].Index = i;
-			}
 		}
 
 		#endregion
@@ -172,13 +102,29 @@ namespace XmlNavigator
 		#region Properties
 
 		/// <summary>
-		/// Gets the parent node of this node
+		/// Gets or sets the full name of the node
 		/// </summary>
-		public NodeData Parent
-		{
-			get { return _parentNode; }
-			private set { _parentNode = value; }
-		}
+		public string Name { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the local name of the node
+		/// </summary>
+		public string LocalName { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the parent node of this node
+		/// </summary>
+		public NodeData Parent { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the depth the node is located at
+		/// </summary>
+		public int Depth { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the node is empty (ie. does not have the full closing tag)
+		/// </summary>
+		public bool IsEmpty { get; private set; }
 
 		/// <summary>
 		/// Gets the collection of child nodes
@@ -186,15 +132,6 @@ namespace XmlNavigator
 		public IEnumerable<NodeData> ChildNodes
 		{
 			get { return _childNodes.AsReadOnly(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the index of the node in its parent's child node list
-		/// </summary>
-		public int Index
-		{
-			get { return _index; }
-			private set { _index = value; }
 		}
 
 		/// <summary>
@@ -272,7 +209,7 @@ namespace XmlNavigator
 			{
 				textReader = new System.IO.StringReader( _text );
 				reader = XmlReader.Create( textReader );
-				ReadNodes( reader );
+				ReadNodes( reader, null );
 			}
 			catch( Exception e )
 			{
@@ -299,37 +236,90 @@ namespace XmlNavigator
 		/// Reads the nodes using the given reader
 		/// </summary>
 		/// <param name="reader">The reader to use</param>
-		private void ReadNodes( XmlReader reader )
+		/// <param name="current">The parent of the current subtree</param>
+		private void ReadNodes( XmlReader reader, NodeData current )
 		{
-			var parentNodes = new Dictionary<int, NodeData>();
-			var lineInfo = (IXmlLineInfo) reader;
-
 			while( reader.Read() )
 			{
-				if( reader.NodeType != XmlNodeType.Element )
-					continue;
-
-				NodeData current;
-				NodeData parent;
-
-				if( parentNodes.TryGetValue( reader.Depth, out parent ) )
+				if( CanSetContentStart( current ) )
 				{
-					current = parent.AddChild( reader.LocalName );
-				}
-				else
-				{
-					current = new NodeData( reader.LocalName );
+					current.ContentExtent.Start = GetCurrentPosition( reader );
 				}
 
-				current.NodeExtent.Start = GetCurrentPosition( reader ) - 1;
-
-				if( _rootNode == null && reader.Depth == 0 )
+				if( CanSetNodeEnd( current, reader ) )
 				{
-					_rootNode = current;
+					current.NodeExtent.End = GetCurrentPosition( reader );
 				}
 
-				parentNodes[reader.Depth + 1] = current;
+				switch( reader.NodeType )
+				{
+					case XmlNodeType.Element:
+						var node = new NodeData( reader );
+						node.NodeExtent.Start = GetCurrentPosition( reader );
+
+						if( current != null )
+						{
+							current.AddChild( node );
+						}
+
+						current = node;
+
+						ReadNodes( reader.ReadSubtree(), current );
+						break;
+
+					case XmlNodeType.EndElement:
+						current.ContentExtent.End = GetCurrentPosition( reader );
+
+						// read up to the next node and update the node's end position
+						reader.Read();
+						current.NodeExtent.End = GetCurrentPosition( reader );
+
+						current = current.Parent;
+						break;
+				}
 			}
+		}
+
+		/// <summary>
+		/// Checks whether the start position of a node content can be set
+		/// </summary>
+		/// <param name="node">The node to check</param>
+		/// <returns>True if the content start position can be set</returns>
+		private bool CanSetContentStart( NodeData node )
+		{
+			if( node == null )
+				return false;
+
+			if( node.IsEmpty )
+				return false;
+
+			if( node.ContentExtent.Start >= 0 )
+				return false;   // already set
+
+			return true;
+		}
+
+		/// <summary>
+		/// Checks whether the end position of a node
+		/// </summary>
+		/// <param name="node">The node to check</param>
+		/// <param name="reader">The current reader</param>
+		/// <returns>True if the node end position can be set</returns>
+		private bool CanSetNodeEnd( NodeData node, XmlReader reader )
+		{
+			if( node == null )
+				return false;
+
+			if( node.NodeExtent.End >= 0 )
+				return false;   // already set
+
+			if( !node.IsEmpty )
+				return false;	// will be set after the EndElement node is found
+
+			if( reader.Depth > node.Depth )
+				return false;   // inside the node's subtree
+
+			return true;
 		}
 
 		/// <summary>
@@ -356,6 +346,12 @@ namespace XmlNavigator
 		{
 			var lineInfo = (IXmlLineInfo) reader;
 			int position = _lineOffsets[lineInfo.LineNumber - 1] + lineInfo.LinePosition - 1;
+
+			if( reader.NodeType == XmlNodeType.Element )
+			{
+				// include the opening bracket
+				position--;
+			}
 
 			return position;
 		}
