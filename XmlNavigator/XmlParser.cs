@@ -22,6 +22,14 @@ namespace XmlNavigator
 		/// </summary>
 		public int End { get; set; } = -1;
 
+		/// <summary>
+		/// Gets a value indicating whether the extent represents a valid range
+		/// </summary>
+		public bool IsValid
+		{
+			get { return (this.Start >= 0 && this.End > this.Start); }
+		}
+
 		#endregion
 	}
 
@@ -389,10 +397,16 @@ namespace XmlNavigator
 			var lineInfo = (IXmlLineInfo) reader;
 			int position = _lineOffsets[lineInfo.LineNumber - 1] + lineInfo.LinePosition - 1;
 
-			if( reader.NodeType == XmlNodeType.Element )
+			// include the opening bracket
+			switch( reader.NodeType )
 			{
-				// include the opening bracket
-				position--;
+				case XmlNodeType.Element:
+					position--;
+					break;
+
+				case XmlNodeType.EndElement:
+					position -= 2;
+					break;
 			}
 
 			return position;
