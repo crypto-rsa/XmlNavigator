@@ -66,6 +66,7 @@ namespace XmlNavigator
 		/// </summary>
 		/// <param name="reader">The current reader</param>
 		public NodeData( XmlReader reader )
+			: this()
 		{
 			this.Name = reader.Name;
 			this.LocalName = reader.LocalName;
@@ -239,6 +240,14 @@ namespace XmlNavigator
 		/// <param name="current">The parent of the current subtree</param>
 		private void ReadNodes( XmlReader reader, NodeData current )
 		{
+			var parent = current;
+
+			if( current != null )
+			{
+				// skip the opening tag
+				reader.Read();
+			}
+
 			while( reader.Read() )
 			{
 				if( CanSetContentStart( current ) )
@@ -254,30 +263,63 @@ namespace XmlNavigator
 				switch( reader.NodeType )
 				{
 					case XmlNodeType.Element:
-						var node = new NodeData( reader );
-						node.NodeExtent.Start = GetCurrentPosition( reader );
-
-						if( current != null )
-						{
-							current.AddChild( node );
-						}
-
-						current = node;
-
-						ReadNodes( reader.ReadSubtree(), current );
+						current = ProcessElement( reader, parent );
 						break;
 
 					case XmlNodeType.EndElement:
-						current.ContentExtent.End = GetCurrentPosition( reader );
-
-						// read up to the next node and update the node's end position
-						reader.Read();
-						current.NodeExtent.End = GetCurrentPosition( reader );
-
 						current = current.Parent;
 						break;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Processes a node representing the start of an element (also an end, if it is empty)
+		/// </summary>
+		/// <param name="reader">The current reader</param>
+		/// <param name="parent">The parent of the new node (can be null)</param>
+		/// <returns>The newly read node</returns>
+		private NodeData ProcessElement( XmlReader reader, NodeData parent )
+		{
+			var current = new NodeData( reader );
+			current.NodeExtent.Start = GetCurrentPosition( reader );
+
+			// set the root
+			if( _rootNode == null )
+			{
+				_rootNode = current;
+			}
+
+			if( parent != null )
+			{
+				parent.AddChild( current );
+			}
+
+			if( !current.IsEmpty )
+			{
+				// read the subtree
+				using( var subTreeReader = reader.ReadSubtree() )
+				{
+					ReadNodes( subTreeReader, current );
+				}
+
+				// we are now at the closing tag of the current node
+				current.ContentExtent.End = GetCurrentPosition( reader );
+
+				// skip the closing tag
+				reader.Read();
+
+				if( reader.NodeType != XmlNodeType.None )
+				{
+					current.NodeExtent.End = GetCurrentPosition( reader );
+				}
+				else
+				{
+					current.NodeExtent.End = _text.Length;
+				}
+			}
+
+			return current;
 		}
 
 		/// <summary>
