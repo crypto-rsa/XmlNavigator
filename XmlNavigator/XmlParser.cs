@@ -369,8 +369,8 @@ namespace XmlNavigator
 		/// </summary>
 		private void CalculateLineOffsets()
 		{
-			var lines = _text.Split( new string[] { Environment.NewLine }, StringSplitOptions.None );
-			int separatorLength = Environment.NewLine.Length;
+			var lines = _text.Split( '\n' );
+			int separatorLength = 1;	// XmlReader always normalizes line separators to '\n'
 
 			_lineOffsets = new int[lines.Length + 1];
 			for( int i = 0; i < _lineOffsets.Length; i++ )
