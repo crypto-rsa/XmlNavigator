@@ -46,11 +46,6 @@ namespace XmlNavigator
 		private List<NodeData> _childNodes;
 
 		/// <summary>
-		/// The list of the attributes
-		/// </summary>
-		private List<KeyValuePair<string, string>> _attributes;
-
-		/// <summary>
 		/// The extent of the full node including the opening and closing tags
 		/// </summary>
 		private NodeExtent _nodeExtent;
@@ -70,7 +65,6 @@ namespace XmlNavigator
 		private NodeData()
 		{
 			_childNodes = new List<NodeData>();
-			_attributes = new List<KeyValuePair<string, string>>();
 			_nodeExtent = new NodeExtent();
 			_contentExtent = new NodeExtent();
 		}
@@ -156,12 +150,9 @@ namespace XmlNavigator
 		}
 
 		/// <summary>
-		/// Gets the list of element attributes
+		/// Gets or sets the list of element attributes
 		/// </summary>
-		public List<KeyValuePair<string, string>> Attributes
-		{
-			get { return _attributes; }
-		}
+		public List<KeyValuePair<string, string>> Attributes { get; set; }
 
 		/// <summary>
 		/// Gets the extent of the full node (including the opening and closing tags)
@@ -363,6 +354,8 @@ namespace XmlNavigator
 		{
 			if( !reader.HasAttributes )
 				return;
+
+			data.Attributes = new List<KeyValuePair<string, string>>( reader.AttributeCount );
 
 			for( int i = 0; i < reader.AttributeCount; i++ )
 			{
