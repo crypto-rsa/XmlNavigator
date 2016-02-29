@@ -216,6 +216,8 @@ namespace XmlNavigator
 
 		#region Event Handlers
 
+		#region Tree View
+
 		private void treeViewNodes_AfterSelect( object sender, TreeViewEventArgs e )
 		{
 			var data = e.Node?.Tag as NodeData;
@@ -246,6 +248,97 @@ namespace XmlNavigator
 				treeViewNodes.EndUpdate();
 			}
 		}
+
+		private void treeViewNodes_NodeMouseClick( object sender, TreeNodeMouseClickEventArgs e )
+		{
+			if( e.Button == MouseButtons.Right )
+			{
+				treeViewNodes.SelectedNode = e.Node;
+			}
+		}
+
+		#endregion
+
+		#region Node Context Menu
+
+		private void nodeContextMenu_Opening( object sender, CancelEventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			bool isValidNode = nodeData != null;
+			bool hasContent = isValidNode && !nodeData.IsEmpty;
+
+			toolStripMenuItemGoToNodeStart.Enabled = isValidNode;
+			toolStripMenuItemGoToNodeEnd.Enabled = isValidNode;
+			toolStripMenuItemSelectNode.Enabled = isValidNode;
+			toolStripMenuItemNodeContentStart.Enabled = hasContent;
+			toolStripMenuItemNodeContentEnd.Enabled = hasContent;
+			toolStripMenuItemSelectContent.Enabled = hasContent;
+		}
+
+		private void toolStripMenuItemGoToNodeStart_Click( object sender, EventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			if( nodeData == null )
+				return;
+
+			Main.GoToPosition( nodeData.NodeExtent.Start );
+		}
+
+		private void toolStripMenuItemGoToNodeEnd_Click( object sender, EventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			if( nodeData == null )
+				return;
+
+			Main.GoToPosition( nodeData.NodeExtent.End );
+		}
+
+		private void toolStripMenuItemNodeContentStart_Click( object sender, EventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			if( nodeData == null )
+				return;
+
+			if( nodeData.IsEmpty )
+				return;
+
+			Main.GoToPosition( nodeData.ContentExtent.Start );
+		}
+
+		private void toolStripMenuItemNodeContentEnd_Click( object sender, EventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			if( nodeData == null )
+				return;
+
+			if( nodeData.IsEmpty )
+				return;
+
+			Main.GoToPosition( nodeData.ContentExtent.End );
+		}
+
+		private void toolStripMenuItemSelectNode_Click( object sender, EventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			if( nodeData == null )
+				return;
+
+			Main.SetSelection( nodeData.NodeExtent.Start, nodeData.NodeExtent.End );
+		}
+
+		private void toolStripMenuItemSelectContent_Click( object sender, EventArgs e )
+		{
+			var nodeData = treeViewNodes.SelectedNode?.Tag as NodeData;
+			if( nodeData == null )
+				return;
+
+			if( nodeData.IsEmpty )
+				return;
+
+			Main.SetSelection( nodeData.ContentExtent.Start, nodeData.ContentExtent.End );
+		}
+
+		#endregion
 
 		#endregion
 	}
