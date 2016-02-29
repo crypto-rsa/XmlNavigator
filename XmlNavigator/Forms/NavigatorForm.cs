@@ -16,6 +16,15 @@ namespace XmlNavigator
 	/// </summary>
 	public partial class NavigatorForm : Form
 	{
+		#region Constants
+
+		/// <summary>
+		/// The maximum depth of nodes in the tree view which are generated initially
+		/// </summary>
+		private const int MaximumExpandedDepth = 1;
+
+		#endregion
+
 		#region Data Members
 
 		/// <summary>
@@ -109,7 +118,7 @@ namespace XmlNavigator
 			if( _parser.RootNode == null )
 				return null;
 
-			var rootNode = GenerateTree( _parser.RootNode, null );
+			var rootNode = GenerateTree( _parser.RootNode, MaximumExpandedDepth );
 
 			if( rootNode != null )
 			{
@@ -123,25 +132,52 @@ namespace XmlNavigator
 		/// Generates a subtree
 		/// </summary>
 		/// <param name="data">The data representing a node</param>
-		/// <param name="nodeCollection">The collection to add the node to</param>
+		/// <param name="maxDepth">The maximum depth of the expanded nodes</param>
 		/// <returns>The tree node corresponding to <paramref name="data"/></returns>
-		private TreeNode GenerateTree( NodeData data, TreeNodeCollection nodeCollection )
+		private TreeNode GenerateTree( NodeData data, int maxDepth )
 		{
 			_generateTreeCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
 			var node = new TreeNode( data.ToString() ) { Tag = data };
+			var childNodes = GetChildNodes( data, maxDepth );
 
-			if( nodeCollection != null )
+			if( childNodes != null )
 			{
-				nodeCollection.Add( node );
-			}
-
-			foreach( var childData in data.ChildNodes )
-			{
-				GenerateTree( childData, node.Nodes );
+				node.Nodes.AddRange( childNodes );
 			}
 
 			return node;
+		}
+
+		/// <summary>
+		/// Returns an array of tree nodes representing the child nodes of a node
+		/// </summary>
+		/// <param name="data">The data representing a node to get the child nodes of</param>
+		/// <param name="maxDepth">The maximum depth of the expanded nodes</param>
+		/// <returns>The array of tree nodes representing child nodes of <paramref name="data"/></returns>
+		private TreeNode[] GetChildNodes( NodeData data, int maxDepth )
+		{
+			TreeNode[] nodeArray = null;
+
+			if( data.Depth < maxDepth )
+			{
+				data.TreeNodeExpanded = true;
+
+				var childNodes = data.ChildNodes;
+				nodeArray = new TreeNode[childNodes.Count];
+
+				for( int i = 0; i < childNodes.Count; i++ )
+				{
+					nodeArray[i] = GenerateTree( childNodes[i], maxDepth );
+				}
+			}
+			else if( data.ChildNodes.Any() )
+			{
+				// add a dummy node where child nodes exist to allow expanding
+				nodeArray = new TreeNode[] { new TreeNode( "<dummy>" ) };
+			}
+
+			return nodeArray;
 		}
 
 		/// <summary>
@@ -187,6 +223,28 @@ namespace XmlNavigator
 				return;
 
 			Main.GoToPosition( data.NodeExtent.Start );
+		}
+
+		private void treeViewNodes_BeforeExpand( object sender, TreeViewCancelEventArgs e )
+		{
+			var data = e.Node?.Tag as NodeData;
+			if( data == null )
+				return;
+
+			if( data.TreeNodeExpanded )
+				return;
+
+			treeViewNodes.BeginUpdate();
+
+			try
+			{
+				e.Node.Nodes.Clear();
+				e.Node.Nodes.AddRange( GetChildNodes( data, data.Depth + 1 ) );
+			}
+			finally
+			{
+				treeViewNodes.EndUpdate();
+			}
 		}
 
 		#endregion

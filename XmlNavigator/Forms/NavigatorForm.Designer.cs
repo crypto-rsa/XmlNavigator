@@ -38,6 +38,7 @@
 			this.treeViewNodes.Name = "treeViewNodes";
 			this.treeViewNodes.Size = new System.Drawing.Size(284, 262);
 			this.treeViewNodes.TabIndex = 1;
+			this.treeViewNodes.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewNodes_BeforeExpand);
 			this.treeViewNodes.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewNodes_AfterSelect);
 			// 
 			// NavigatorForm

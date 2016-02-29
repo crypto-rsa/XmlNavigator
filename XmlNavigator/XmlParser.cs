@@ -73,12 +73,13 @@ namespace XmlNavigator
 		/// Constructs a node using the current state of an <see cref="XmlReader"/>
 		/// </summary>
 		/// <param name="reader">The current reader</param>
-		public NodeData( XmlReader reader )
+		/// <param name="depth">The depth of the node in the full tree</param>
+		public NodeData( XmlReader reader, int depth )
 			: this()
 		{
 			this.Name = reader.Name;
 			this.LocalName = reader.LocalName;
-			this.Depth = reader.Depth;
+			this.Depth = depth;
 			this.IsEmpty = reader.IsEmptyElement;
 		}
 
@@ -136,9 +137,14 @@ namespace XmlNavigator
 		public bool IsEmpty { get; private set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the tree node corresponding to this object has been expanded
+		/// </summary>
+		public bool TreeNodeExpanded { get; set; }
+
+		/// <summary>
 		/// Gets the collection of child nodes
 		/// </summary>
-		public IEnumerable<NodeData> ChildNodes
+		public IReadOnlyList<NodeData> ChildNodes
 		{
 			get { return _childNodes.AsReadOnly(); }
 		}
@@ -289,7 +295,9 @@ namespace XmlNavigator
 		/// <returns>The newly read node</returns>
 		private NodeData ProcessElement( XmlReader reader, NodeData parent )
 		{
-			var current = new NodeData( reader );
+			int depth = parent != null ? parent.Depth + 1 : 0;
+			var current = new NodeData( reader, depth );
+
 			current.NodeExtent.Start = GetCurrentPosition( reader );
 
 			// set the root
