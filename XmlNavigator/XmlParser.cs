@@ -46,6 +46,11 @@ namespace XmlNavigator
 		private List<NodeData> _childNodes;
 
 		/// <summary>
+		/// The list of the attributes
+		/// </summary>
+		private List<KeyValuePair<string, string>> _attributes;
+
+		/// <summary>
 		/// The extent of the full node including the opening and closing tags
 		/// </summary>
 		private NodeExtent _nodeExtent;
@@ -65,6 +70,7 @@ namespace XmlNavigator
 		private NodeData()
 		{
 			_childNodes = new List<NodeData>();
+			_attributes = new List<KeyValuePair<string, string>>();
 			_nodeExtent = new NodeExtent();
 			_contentExtent = new NodeExtent();
 		}
@@ -147,6 +153,14 @@ namespace XmlNavigator
 		public IReadOnlyList<NodeData> ChildNodes
 		{
 			get { return _childNodes.AsReadOnly(); }
+		}
+
+		/// <summary>
+		/// Gets the list of element attributes
+		/// </summary>
+		public List<KeyValuePair<string, string>> Attributes
+		{
+			get { return _attributes; }
 		}
 
 		/// <summary>
@@ -300,6 +314,8 @@ namespace XmlNavigator
 
 			current.NodeExtent.Start = GetCurrentPosition( reader );
 
+			ReadAttributes( reader, current );
+
 			// set the root
 			if( _rootNode == null )
 			{
@@ -336,6 +352,26 @@ namespace XmlNavigator
 			}
 
 			return current;
+		}
+
+		/// <summary>
+		/// Reads the attributes of the current element
+		/// </summary>
+		/// <param name="reader">The current reader</param>
+		/// <param name="data">The current element data</param>
+		private void ReadAttributes( XmlReader reader, NodeData data )
+		{
+			if( !reader.HasAttributes )
+				return;
+
+			for( int i = 0; i < reader.AttributeCount; i++ )
+			{
+				reader.MoveToAttribute( i );
+
+				data.Attributes.Add( new KeyValuePair<string, string>( reader.Name, reader.Value ) );
+			}
+
+			reader.MoveToElement();
 		}
 
 		/// <summary>
