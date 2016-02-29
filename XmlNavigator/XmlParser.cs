@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -105,6 +106,25 @@ namespace XmlNavigator
 			childNode.Parent = this;
 
 			_childNodes.Add( childNode );
+		}
+
+		/// <summary>
+		/// Returns the name of the node to show in the tree view
+		/// </summary>
+		/// <returns></returns>
+		public string GetDisplayName()
+		{
+			var nameBuilder = new StringBuilder();
+
+			nameBuilder.Append( this.LocalName );
+
+			if( this.Attributes != null )
+			{
+				nameBuilder.Append( " " );
+				nameBuilder.Append( string.Join( " ", this.Attributes.Select( a => $"[{a.Value}]" ) ) );
+			}
+
+			return nameBuilder.ToString();
 		}
 
 		#endregion

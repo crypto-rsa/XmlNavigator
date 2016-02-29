@@ -138,7 +138,7 @@ namespace XmlNavigator
 		{
 			_generateTreeCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-			var node = new TreeNode( data.ToString() ) { Tag = data };
+			var node = new TreeNode( data.GetDisplayName() ) { Tag = data };
 			var childNodes = GetChildNodes( data, maxDepth );
 
 			if( childNodes != null )
