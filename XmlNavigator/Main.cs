@@ -73,7 +73,7 @@ namespace XmlNavigator
 		internal static void SetToolBarIcon()
 		{
 			toolbarIcons tbIcons = new toolbarIcons();
-			tbIcons.hToolbarBmp = Properties.Resources.star.GetHbitmap();
+			tbIcons.hToolbarBmp = Properties.Resources.XmlNavigator.GetHbitmap();
 			IntPtr pTbIcons = Marshal.AllocHGlobal( Marshal.SizeOf( tbIcons ) );
 			Marshal.StructureToPtr( tbIcons, pTbIcons, false );
 			Win32.SendMessage( PluginBase.nppData._nppHandle, NppMsg.NPPM_ADDTOOLBARICON, PluginBase._funcItems.Items[_idNavigatorForm]._cmdID, pTbIcons );
