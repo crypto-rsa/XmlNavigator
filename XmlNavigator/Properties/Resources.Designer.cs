@@ -81,9 +81,9 @@ namespace XmlNavigator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap star {
+        internal static System.Drawing.Bitmap XmlNavigator {
             get {
-                object obj = ResourceManager.GetObject("star", resourceCulture);
+                object obj = ResourceManager.GetObject("XmlNavigator", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
