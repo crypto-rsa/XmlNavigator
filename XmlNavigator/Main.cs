@@ -93,7 +93,13 @@ namespace XmlNavigator
 		/// </summary>
 		internal static void AboutCommand()
 		{
-			MessageBox.Show( "Hello N++!" );
+			using( var form = new AboutForm() )
+			{
+				var handle = PluginBase.GetCurrentScintilla();
+				var window = NativeWindow.FromHandle( handle );
+
+				form.ShowDialog( window );
+			}
 		}
 
 		/// <summary>
