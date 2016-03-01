@@ -7,5 +7,6 @@ Features:
     * node start/end (ie. start of opening tag/end of closing tag)
     * content start/end (where _content_ is the node text excluding the opening and closing tags)
   * allows selecting whole node or node content directly from the context menu
+  * shows attribute values next to the node name, greatly simplifying navigation within a node which has lots of child nodes with the same names
   
 More useful features are planned, so stay tuned!
