@@ -62,6 +62,15 @@ namespace XmlNavigator
 		public NavigatorForm()
 		{
 			InitializeComponent();
+		}
+
+		#endregion
+
+		#region Overrides
+
+		protected override void OnVisibleChanged( EventArgs e )
+		{
+			base.OnVisibleChanged( e );
 
 			Reload();
 		}
@@ -75,6 +84,9 @@ namespace XmlNavigator
 		/// </summary>
 		public void Reload()
 		{
+			if( !this.Visible )
+				return;
+
 			_path = NppPluginNET.PluginBase.GetFullCurrentFileName();
 			_text = NppPluginNET.PluginBase.GetCurrentFileText();
 
