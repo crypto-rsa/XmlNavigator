@@ -46,20 +46,23 @@ namespace XmlNavigator
         static void beNotified(IntPtr notifyCode)
         {
             SCNotification nc = (SCNotification)Marshal.PtrToStructure(notifyCode, typeof(SCNotification));
-            if (nc.nmhdr.code == (uint)NppMsg.NPPN_TBMODIFICATION)
-            {
-                PluginBase._funcItems.RefreshItems();
-                Main.SetToolBarIcon();
-            }
-            else if (nc.nmhdr.code == (uint)NppMsg.NPPN_SHUTDOWN)
-            {
-                Main.PluginCleanUp();
-                Marshal.FreeHGlobal(_ptrPluginName);
-            }
 
-			if( nc.nmhdr.code == (uint) NppMsg.NPPN_BUFFERACTIVATED )
+			switch( nc.nmhdr.code )
 			{
-				Main.OnBufferActivated();
+				case (uint) NppMsg.NPPN_TBMODIFICATION:
+					PluginBase._funcItems.RefreshItems();
+					Main.SetToolBarIcon();
+					break;
+
+				case (uint) NppMsg.NPPN_SHUTDOWN:
+					Main.PluginCleanUp();
+					Marshal.FreeHGlobal(_ptrPluginName);
+					break;
+
+				case (uint) NppMsg.NPPN_BUFFERACTIVATED:
+				case (uint) NppMsg.NPPN_FILESAVED:
+					Main.ReloadNavigatorTree();
+					break;
 			}
         }
     }

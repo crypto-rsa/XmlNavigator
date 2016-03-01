@@ -122,7 +122,7 @@ namespace XmlNavigator
 			}
 		}
 
-		internal static void OnBufferActivated()
+		internal static void ReloadNavigatorTree()
 		{
 			if( _navigatorForm == null )
 				return;
