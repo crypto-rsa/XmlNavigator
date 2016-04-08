@@ -48,9 +48,10 @@ namespace NppPluginNET
 			if( length == -1 )
 				length = Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0 ).ToInt32();
 
-			Sci_TextRange range = new Sci_TextRange( 0, -1, length );
-			Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXTRANGE, 0, range.NativePointer );
-			return range.lpstrText;
+			var text = new StringBuilder( length + 1 );
+			Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXT, length, text );
+
+			return text.ToString();
 		}
 
 		internal static string GetFullCurrentFileName()
