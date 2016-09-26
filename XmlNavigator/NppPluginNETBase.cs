@@ -49,7 +49,7 @@ namespace NppPluginNET
 				length = Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0 ).ToInt32();
 
 			var text = new StringBuilder( length + 1 );
-			Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXT, length, text );
+			Win32.SendMessage( PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXT, length + 1, text );
 
 			return text.ToString();
 		}
