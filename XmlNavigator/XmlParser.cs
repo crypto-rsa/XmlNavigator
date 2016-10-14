@@ -132,6 +132,33 @@ namespace XmlNavigator
 			return nameBuilder.ToString();
 		}
 
+		/// <summary>
+		/// Checks whether a subtree rooted at this node matches the given filter
+		/// </summary>
+		/// <param name="filterItems">An array of filter items to match</param>
+		/// <returns>True if this node or any node in its subtree match the filter</returns>
+		public bool SubtreeMatchesFilter( string[] filterItems )
+		{
+			if( NameMatchesFilter( filterItems ) )
+				return true;
+
+			return this.ChildNodes.Any( c => c.SubtreeMatchesFilter( filterItems ) );
+		}
+
+		/// <summary>
+		/// Checks whether the display name of this node matches the given filter
+		/// </summary>
+		/// <param name="filterItems">An array of filter items to match</param>
+		/// <returns>True if the display name matches the filter</returns>
+		private bool NameMatchesFilter( string[] filterItems )
+		{
+			// FILTER MATCHING:
+			//	- all items must be present in the display name
+			//	- order doesn't matter
+			//	- same prefixes are matched only once (ie. "a ab" matches the same nodes as "ab")
+			return filterItems.All( s => this.DisplayName.IndexOf( s, StringComparison.OrdinalIgnoreCase ) >= 0 );
+		}
+
 		#endregion
 
 		#region Properties
