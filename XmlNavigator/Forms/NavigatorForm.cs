@@ -155,6 +155,9 @@ namespace XmlNavigator
 		{
 			_generateTreeCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
+			if( !data.SubtreeMatchesFilter( _filterItems ) )
+				return null;
+
 			var node = new TreeNode( data.DisplayName ) { Tag = data, ToolTipText = data.Comment };
 			var childNodes = GetChildNodes( data, maxDepth );
 
@@ -176,11 +179,12 @@ namespace XmlNavigator
 		{
 			TreeNode[] nodeArray = null;
 
+			var childNodes = data.ChildNodes.Where( n => n.SubtreeMatchesFilter( _filterItems ) ).ToList();
+
 			if( data.Depth < maxDepth )
 			{
 				data.TreeNodeExpanded = true;
 
-				var childNodes = data.ChildNodes;
 				nodeArray = new TreeNode[childNodes.Count];
 
 				for( int i = 0; i < childNodes.Count; i++ )
@@ -188,7 +192,7 @@ namespace XmlNavigator
 					nodeArray[i] = GenerateTree( childNodes[i], maxDepth );
 				}
 			}
-			else if( data.ChildNodes.Any() )
+			else if( childNodes.Any() )
 			{
 				// add a dummy node where child nodes exist to allow expanding
 				nodeArray = new TreeNode[] { new TreeNode( "<dummy>" ) };
