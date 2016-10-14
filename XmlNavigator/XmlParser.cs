@@ -279,36 +279,42 @@ namespace XmlNavigator
 		/// <param name="current">The parent of the current subtree</param>
 		private void ReadNodes( XmlReader reader, NodeData current )
 		{
-			var parent = current;
-
-			if( current != null )
-			{
-				// skip the opening tag
-				reader.Read();
-			}
+			bool setContentStart = false;
+			bool setNodeEnd = false;
 
 			while( reader.Read() )
 			{
-				if( CanSetContentStart( current ) )
+				if( setContentStart )
 				{
 					current.ContentExtent.Start = GetCurrentPosition( reader );
+					setContentStart = false;
 				}
 
-				if( CanSetNodeEnd( current, reader ) )
+				if( setNodeEnd )
 				{
 					current.NodeExtent.End = GetCurrentPosition( reader );
+					setNodeEnd = false;
+					current = current.Parent;
 				}
 
 				switch( reader.NodeType )
 				{
 					case XmlNodeType.Element:
-						current = ProcessElement( reader, parent );
+						current = GetNewElement( reader, current );
+						setContentStart = !current.IsEmpty;
+						setNodeEnd = current.IsEmpty;
 						break;
 
 					case XmlNodeType.EndElement:
-						current = current.Parent;
+						current.ContentExtent.End = GetCurrentPosition( reader );
+						setNodeEnd = true;
 						break;
 				}
+			}
+
+			if( setNodeEnd )
+			{
+				current.NodeExtent.End = GetCurrentPosition( reader );
 			}
 		}
 
@@ -318,7 +324,7 @@ namespace XmlNavigator
 		/// <param name="reader">The current reader</param>
 		/// <param name="parent">The parent of the new node (can be null)</param>
 		/// <returns>The newly read node</returns>
-		private NodeData ProcessElement( XmlReader reader, NodeData parent )
+		private NodeData GetNewElement( XmlReader reader, NodeData parent )
 		{
 			int depth = parent != null ? parent.Depth + 1 : 0;
 			var current = new NodeData( reader, depth );
@@ -336,30 +342,6 @@ namespace XmlNavigator
 			if( parent != null )
 			{
 				parent.AddChild( current );
-			}
-
-			if( !current.IsEmpty )
-			{
-				// read the subtree
-				using( var subTreeReader = reader.ReadSubtree() )
-				{
-					ReadNodes( subTreeReader, current );
-				}
-
-				// we are now at the closing tag of the current node
-				current.ContentExtent.End = GetCurrentPosition( reader );
-
-				// skip the closing tag
-				reader.Read();
-
-				if( reader.NodeType != XmlNodeType.None )
-				{
-					current.NodeExtent.End = GetCurrentPosition( reader );
-				}
-				else
-				{
-					current.NodeExtent.End = _text.Length;
-				}
 			}
 
 			return current;
@@ -385,48 +367,6 @@ namespace XmlNavigator
 			}
 
 			reader.MoveToElement();
-		}
-
-		/// <summary>
-		/// Checks whether the start position of a node content can be set
-		/// </summary>
-		/// <param name="node">The node to check</param>
-		/// <returns>True if the content start position can be set</returns>
-		private bool CanSetContentStart( NodeData node )
-		{
-			if( node == null )
-				return false;
-
-			if( node.IsEmpty )
-				return false;
-
-			if( node.ContentExtent.Start >= 0 )
-				return false;   // already set
-
-			return true;
-		}
-
-		/// <summary>
-		/// Checks whether the end position of a node
-		/// </summary>
-		/// <param name="node">The node to check</param>
-		/// <param name="reader">The current reader</param>
-		/// <returns>True if the node end position can be set</returns>
-		private bool CanSetNodeEnd( NodeData node, XmlReader reader )
-		{
-			if( node == null )
-				return false;
-
-			if( node.NodeExtent.End >= 0 )
-				return false;   // already set
-
-			if( !node.IsEmpty )
-				return false;	// will be set after the EndElement node is found
-
-			if( reader.Depth > node.Depth )
-				return false;   // inside the node's subtree
-
-			return true;
 		}
 
 		/// <summary>
