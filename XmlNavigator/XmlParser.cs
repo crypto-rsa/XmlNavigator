@@ -136,9 +136,12 @@ namespace XmlNavigator
 		/// Checks whether a subtree rooted at this node matches the given filter
 		/// </summary>
 		/// <param name="filterItems">An array of filter items to match</param>
-		/// <returns>True if this node or any node in its subtree match the filter</returns>
+		/// <returns>True if <paramref name="filterItems"/> is null; true if this node or any node in its subtree match the filter; false otherwise</returns>
 		public bool SubtreeMatchesFilter( string[] filterItems )
 		{
+			if( filterItems == null )
+				return true;
+
 			if( NameMatchesFilter( filterItems ) )
 				return true;
 
