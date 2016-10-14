@@ -190,6 +190,11 @@ namespace XmlNavigator
 			get { return _contentExtent; }
 		}
 
+		/// <summary>
+		/// Gets or sets the node comment
+		/// </summary>
+		public string Comment { get; set; }
+
 		#endregion
 	}
 
@@ -308,6 +313,13 @@ namespace XmlNavigator
 					case XmlNodeType.EndElement:
 						current.ContentExtent.End = GetCurrentPosition( reader );
 						setNodeEnd = true;
+						break;
+
+					case XmlNodeType.Comment:
+						if( current != null )
+						{
+							current.Comment = reader.Value;
+						}
 						break;
 				}
 			}
