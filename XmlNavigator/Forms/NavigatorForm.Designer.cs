@@ -129,7 +129,7 @@
 			this.panelFilter.Location = new System.Drawing.Point(0, 0);
 			this.panelFilter.Name = "panelFilter";
 			this.panelFilter.Size = new System.Drawing.Size(284, 26);
-			this.panelFilter.TabIndex = 2;
+			this.panelFilter.TabIndex = 0;
 			// 
 			// textBoxFilter
 			// 
