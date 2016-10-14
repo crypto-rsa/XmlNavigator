@@ -31,13 +31,13 @@
 			this.components = new System.ComponentModel.Container();
 			this.treeViewNodes = new System.Windows.Forms.TreeView();
 			this.nodeContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripMenuItemGoToNodeStart = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemGoTo = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemGoToNodeEnd = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemNodeContentStart = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemNodeContentEnd = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemSelectNode = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemSelectContent = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItemGoToNodeStart = new System.Windows.Forms.ToolStripMenuItem();
 			this.nodeContextMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -47,6 +47,7 @@
 			this.treeViewNodes.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeViewNodes.Location = new System.Drawing.Point(0, 0);
 			this.treeViewNodes.Name = "treeViewNodes";
+			this.treeViewNodes.ShowNodeToolTips = true;
 			this.treeViewNodes.Size = new System.Drawing.Size(284, 262);
 			this.treeViewNodes.TabIndex = 1;
 			this.treeViewNodes.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewNodes_BeforeExpand);
@@ -64,6 +65,13 @@
 			this.nodeContextMenu.Size = new System.Drawing.Size(175, 92);
 			this.nodeContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.nodeContextMenu_Opening);
 			// 
+			// toolStripMenuItemGoToNodeStart
+			// 
+			this.toolStripMenuItemGoToNodeStart.Name = "toolStripMenuItemGoToNodeStart";
+			this.toolStripMenuItemGoToNodeStart.Size = new System.Drawing.Size(174, 22);
+			this.toolStripMenuItemGoToNodeStart.Text = "Go To Node Start";
+			this.toolStripMenuItemGoToNodeStart.Click += new System.EventHandler(this.toolStripMenuItemGoToNodeStart_Click);
+			// 
 			// toolStripMenuItemGoTo
 			// 
 			this.toolStripMenuItemGoTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -77,21 +85,21 @@
 			// toolStripMenuItemGoToNodeEnd
 			// 
 			this.toolStripMenuItemGoToNodeEnd.Name = "toolStripMenuItemGoToNodeEnd";
-			this.toolStripMenuItemGoToNodeEnd.Size = new System.Drawing.Size(152, 22);
+			this.toolStripMenuItemGoToNodeEnd.Size = new System.Drawing.Size(144, 22);
 			this.toolStripMenuItemGoToNodeEnd.Text = "Node End";
 			this.toolStripMenuItemGoToNodeEnd.Click += new System.EventHandler(this.toolStripMenuItemGoToNodeEnd_Click);
 			// 
 			// toolStripMenuItemNodeContentStart
 			// 
 			this.toolStripMenuItemNodeContentStart.Name = "toolStripMenuItemNodeContentStart";
-			this.toolStripMenuItemNodeContentStart.Size = new System.Drawing.Size(152, 22);
+			this.toolStripMenuItemNodeContentStart.Size = new System.Drawing.Size(144, 22);
 			this.toolStripMenuItemNodeContentStart.Text = "Content Start";
 			this.toolStripMenuItemNodeContentStart.Click += new System.EventHandler(this.toolStripMenuItemNodeContentStart_Click);
 			// 
 			// toolStripMenuItemNodeContentEnd
 			// 
 			this.toolStripMenuItemNodeContentEnd.Name = "toolStripMenuItemNodeContentEnd";
-			this.toolStripMenuItemNodeContentEnd.Size = new System.Drawing.Size(152, 22);
+			this.toolStripMenuItemNodeContentEnd.Size = new System.Drawing.Size(144, 22);
 			this.toolStripMenuItemNodeContentEnd.Text = "Content End";
 			this.toolStripMenuItemNodeContentEnd.Click += new System.EventHandler(this.toolStripMenuItemNodeContentEnd_Click);
 			// 
@@ -108,13 +116,6 @@
 			this.toolStripMenuItemSelectContent.Size = new System.Drawing.Size(174, 22);
 			this.toolStripMenuItemSelectContent.Text = "Select Content";
 			this.toolStripMenuItemSelectContent.Click += new System.EventHandler(this.toolStripMenuItemSelectContent_Click);
-			// 
-			// toolStripMenuItemGoToNodeStart
-			// 
-			this.toolStripMenuItemGoToNodeStart.Name = "toolStripMenuItemGoToNodeStart";
-			this.toolStripMenuItemGoToNodeStart.Size = new System.Drawing.Size(174, 22);
-			this.toolStripMenuItemGoToNodeStart.Text = "Go To Node Start";
-			this.toolStripMenuItemGoToNodeStart.Click += new System.EventHandler(this.toolStripMenuItemGoToNodeStart_Click);
 			// 
 			// NavigatorForm
 			// 
