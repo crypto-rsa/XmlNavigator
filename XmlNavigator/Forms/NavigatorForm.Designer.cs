@@ -38,17 +38,21 @@
 			this.toolStripMenuItemNodeContentEnd = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemSelectNode = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemSelectContent = new System.Windows.Forms.ToolStripMenuItem();
+			this.panelFilter = new System.Windows.Forms.Panel();
+			this.textBoxFilter = new System.Windows.Forms.TextBox();
+			this.buttonResetFilter = new System.Windows.Forms.Button();
 			this.nodeContextMenu.SuspendLayout();
+			this.panelFilter.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// treeViewNodes
 			// 
 			this.treeViewNodes.ContextMenuStrip = this.nodeContextMenu;
 			this.treeViewNodes.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeViewNodes.Location = new System.Drawing.Point(0, 0);
+			this.treeViewNodes.Location = new System.Drawing.Point(0, 26);
 			this.treeViewNodes.Name = "treeViewNodes";
 			this.treeViewNodes.ShowNodeToolTips = true;
-			this.treeViewNodes.Size = new System.Drawing.Size(284, 262);
+			this.treeViewNodes.Size = new System.Drawing.Size(284, 236);
 			this.treeViewNodes.TabIndex = 1;
 			this.treeViewNodes.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewNodes_BeforeExpand);
 			this.treeViewNodes.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewNodes_AfterSelect);
@@ -117,15 +121,49 @@
 			this.toolStripMenuItemSelectContent.Text = "Select Content";
 			this.toolStripMenuItemSelectContent.Click += new System.EventHandler(this.toolStripMenuItemSelectContent_Click);
 			// 
+			// panelFilter
+			// 
+			this.panelFilter.Controls.Add(this.buttonResetFilter);
+			this.panelFilter.Controls.Add(this.textBoxFilter);
+			this.panelFilter.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panelFilter.Location = new System.Drawing.Point(0, 0);
+			this.panelFilter.Name = "panelFilter";
+			this.panelFilter.Size = new System.Drawing.Size(284, 26);
+			this.panelFilter.TabIndex = 2;
+			// 
+			// textBoxFilter
+			// 
+			this.textBoxFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxFilter.Location = new System.Drawing.Point(3, 3);
+			this.textBoxFilter.Name = "textBoxFilter";
+			this.textBoxFilter.Size = new System.Drawing.Size(244, 20);
+			this.textBoxFilter.TabIndex = 0;
+			this.textBoxFilter.TextChanged += new System.EventHandler(this.textBoxFilter_TextChanged);
+			// 
+			// buttonResetFilter
+			// 
+			this.buttonResetFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonResetFilter.Location = new System.Drawing.Point(253, 3);
+			this.buttonResetFilter.Name = "buttonResetFilter";
+			this.buttonResetFilter.Size = new System.Drawing.Size(28, 20);
+			this.buttonResetFilter.TabIndex = 1;
+			this.buttonResetFilter.Text = "❌";
+			this.buttonResetFilter.UseVisualStyleBackColor = true;
+			this.buttonResetFilter.Click += new System.EventHandler(this.buttonResetFilter_Click);
+			// 
 			// NavigatorForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
 			this.Controls.Add(this.treeViewNodes);
+			this.Controls.Add(this.panelFilter);
 			this.Name = "NavigatorForm";
 			this.Text = "XML Navigator";
 			this.nodeContextMenu.ResumeLayout(false);
+			this.panelFilter.ResumeLayout(false);
+			this.panelFilter.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -141,5 +179,8 @@
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemSelectContent;
 		private System.Windows.Forms.ContextMenuStrip nodeContextMenu;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemGoToNodeStart;
+		private System.Windows.Forms.Panel panelFilter;
+		private System.Windows.Forms.Button buttonResetFilter;
+		private System.Windows.Forms.TextBox textBoxFilter;
 	}
 }

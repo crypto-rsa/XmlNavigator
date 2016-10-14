@@ -361,6 +361,29 @@ namespace XmlNavigator
 
 		#endregion
 
+		#region Filter
+
+		private void textBoxFilter_TextChanged( object sender, EventArgs e )
+		{
+			if( string.IsNullOrWhiteSpace( textBoxFilter.Text ) )
+			{
+				_filterItems = null;
+			}
+			else
+			{
+				_filterItems = textBoxFilter.Text.Split( ' ' );
+			}
+
+			Reload();
+		}
+
+		private void buttonResetFilter_Click( object sender, EventArgs e )
+		{
+			textBoxFilter.Text = string.Empty;
+		}
+
+		#endregion
+
 		#endregion
 	}
 }
