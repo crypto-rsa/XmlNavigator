@@ -52,6 +52,11 @@ namespace XmlNavigator
 		/// </summary>
 		private CancellationTokenSource _generateTreeCancellationTokenSource;
 
+		/// <summary>
+		/// An array of strings to filter the nodes by
+		/// </summary>
+		private string[] _filterItems;
+
 		#endregion
 
 		#region Constructors
