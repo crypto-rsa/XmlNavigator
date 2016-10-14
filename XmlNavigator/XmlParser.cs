@@ -56,6 +56,11 @@ namespace XmlNavigator
 		/// </summary>
 		private NodeExtent _contentExtent;
 
+		/// <summary>
+		/// The name of the node to show in the tree view
+		/// </summary>
+		private string _displayName;
+
 		#endregion
 
 		#region Constructors
@@ -112,7 +117,7 @@ namespace XmlNavigator
 		/// Returns the name of the node to show in the tree view
 		/// </summary>
 		/// <returns></returns>
-		public string GetDisplayName()
+		private string GetDisplayName()
 		{
 			var nameBuilder = new StringBuilder();
 
@@ -140,6 +145,22 @@ namespace XmlNavigator
 		/// Gets or sets the local name of the node
 		/// </summary>
 		public string LocalName { get; private set; }
+
+		/// <summary>
+		/// Gets the name of the node to show in the tree view
+		/// </summary>
+		public string DisplayName
+		{
+			get
+			{
+				if( _displayName == null )
+				{
+					_displayName = GetDisplayName();
+				}
+
+				return _displayName;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the parent node of this node
