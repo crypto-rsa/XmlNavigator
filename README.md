@@ -3,6 +3,7 @@ A Notepad++ plugin which shows the structure of an XML file in a tree view and a
 
 ### Features:
   * fast loading (less than 1 second on a ~16 MB file with over 180 thousand nodes)
+  * filtering visible nodes by name
   * accurate navigation to
     * node start/end (ie. start of opening tag/end of closing tag)
     * content start/end (where _content_ is the node text excluding the opening and closing tags)
