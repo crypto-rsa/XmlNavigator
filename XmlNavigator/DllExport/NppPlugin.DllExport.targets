@@ -17,7 +17,6 @@
                    ProjectDirectory="$(MSBuildProjectDirectory)"
                    InputFileName="$(TargetPath)"
                    FrameworkPath="$(TargetedFrameworkDir);$(TargetFrameworkDirectory)"
-                   LibToolPath="$(DevEnvDir)\..\..\VC\bin"
                    LibToolDllPath="$(DevEnvDir)"
                    SdkPath="$(FrameworkSDKDir)"/>
   </Target>
