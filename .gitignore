@@ -1,4 +1,5 @@
 #Ignore files build by Visual Studio
+.vs/
 *.user
 *.aps
 *.pch
